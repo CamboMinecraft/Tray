@@ -17,7 +17,7 @@ Add Tray to your project using Swift Package Manager:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/yourorg/tray.git", from: "1.0.0")
+    .package(url: "https://github.com/Archetapp/Tray", branch: "main")
 ]
 ```
 
