@@ -16,34 +16,13 @@ public struct TrayExampleView: View {
                 showFlow = true
             } label: {
                 Text("Show Tray")
-                    .frame(
-                        maxWidth: .infinity,
-                        alignment: .center
-                    )
-                    .frame(height: 50)
-                    .background(Color.blue)
-                    .foregroundStyle(Color.white)
-                    .clipShape(Capsule())
+                    .blueButton()
             }
         }
         .padding()
         .tray(isPresented: $showFlow, title: "Welcome") {
             ChooseGroupStep()
         }
-        .trayPadding(8)
-        .trayShowsNavigationProgressBar(true)
-        .trayDefaultPageTransition(.blur)
-        .trayAnimation(.bouncy)
-        .trayBackground { surface in
-            if #available(iOS 18.0, macOS 15.0, *) {
-                if #available(iOS 26.0, *) {
-                    surface.glassEffect(.regular.interactive(), in: .rect(cornerRadius: 20))
-                }
-            } else {
-                surface.background(.ultraThinMaterial)
-            }
-        }
-        
     }
 }
 
@@ -56,11 +35,7 @@ private struct ChooseGroupStep: View {
                     ConfirmStep()
                 } label: {
                     Text("Wallet Group \(idx)")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(Color.systemGray6)
-                        .cornerRadius(8)
+                        .blueButton()
                 }
             }
         }
@@ -78,11 +53,7 @@ private struct ConfirmStep: View {
                 DoneStep()
             } label: {
                 Text("Continue")
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .frame(height: 50)
-                    .background(Color.blue)
-                    .foregroundStyle(Color.white)
-                    .clipShape(Capsule())
+                    .blueButton()
             }
         }
     }
@@ -95,14 +66,7 @@ private struct DoneStep: View {
             Text("All set!").font(.title3).fontWeight(.semibold)
             Spacer(minLength: 200)
             Button("Close") { tray.dismiss() }
-                .frame(
-                    maxWidth: .infinity,
-                    alignment: .center
-                )
-                .frame(height: 50)
-                .background(Color.blue)
-                .foregroundStyle(Color.white)
-                .clipShape(Capsule())
+                .blueButton()
         }
     }
 }
@@ -111,3 +75,15 @@ private struct DoneStep: View {
     TrayExampleView()
 }
 #endif
+
+
+extension View {
+    func blueButton() -> some View {
+        self
+            .frame(maxWidth: .infinity, alignment: .center)
+            .frame(height: 50)
+            .background(Color.blue)
+            .foregroundStyle(Color.white)
+            .clipShape(Capsule())
+    }
+}
