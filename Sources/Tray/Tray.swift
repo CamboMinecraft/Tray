@@ -39,6 +39,7 @@ public struct TrayConfig: @unchecked Sendable {
     public var maxHeight: CGFloat?
     public var dragToDismiss: Bool
     public var tapOutsideToDismiss: Bool
+    public var canSwipeToDismiss: Bool
     /// Transition used for the whole tray surface when inserted/removed.
     public var transition: AnyTransition
     /// Transition applied when the page/content inside the tray changes.
@@ -78,6 +79,7 @@ public struct TrayConfig: @unchecked Sendable {
         maxHeight: CGFloat? = nil,
         dragToDismiss: Bool = true,
         tapOutsideToDismiss: Bool = true,
+        canSwipeToDismiss: Bool = true,
         transition: AnyTransition = TrayConstants.defaultTrayTransition,
         pageTransition: AnyTransition = TrayConstants.defaultPageTransition,
         showsNavigationBar: Bool = true,
@@ -104,6 +106,7 @@ public struct TrayConfig: @unchecked Sendable {
         self.maxHeight = maxHeight
         self.dragToDismiss = dragToDismiss
         self.tapOutsideToDismiss = tapOutsideToDismiss
+        self.canSwipeToDismiss = canSwipeToDismiss
         self.transition = transition
         self.pageTransition = pageTransition
         self.showsNavigationBar = showsNavigationBar
@@ -439,7 +442,7 @@ struct TrayModifier<Root: View>: ViewModifier {
     private var dragGesture: some Gesture {
         DragGesture(minimumDistance: TrayConstants.minimumDragDistance)
             .onChanged { value in
-                guard envConfig.dragToDismiss else { return }
+                guard envConfig.dragToDismiss && envConfig.canSwipeToDismiss else { return }
                 let dy = value.translation.height
                 if dy >= 0 {
                     dragOffset = max(0, dy)
@@ -453,7 +456,7 @@ struct TrayModifier<Root: View>: ViewModifier {
                 }
             }
             .onEnded { value in
-                guard envConfig.dragToDismiss else { return }
+                guard envConfig.dragToDismiss && envConfig.canSwipeToDismiss else { return }
                 let threshold: CGFloat = TrayConstants.dragDismissThreshold
                 if value.translation.height > threshold {
                     controller.dismiss()
@@ -734,5 +737,50 @@ public extension TrayConfig {
         config.horizontalPadding = padding
         config.bottomPadding = padding
         return config
+    }
+    
+    /// Configure whether the tray can be swiped to dismiss
+    func canSwipeToDismiss(_ canSwipe: Bool) -> TrayConfig {
+        var config = self
+        config.canSwipeToDismiss = canSwipe
+        return config
+    }
+}
+
+// MARK: - Tray Can Swipe To Dismiss Modifier
+public struct TrayCanSwipeToDismissModifier: ViewModifier {
+    let canSwipe: Bool
+    
+    public func body(content: Content) -> some View {
+        content.transformEnvironment(\.trayConfig) { config in
+            config.canSwipeToDismiss = canSwipe
+        }
+    }
+}
+
+public extension View {
+    /// Controls whether the tray can be swiped to dismiss
+    /// - Parameter canSwipe: Whether the tray can be dismissed by swiping
+    /// - Returns: A view with the modified swipe-to-dismiss behavior
+    func trayCanSwipeToDismiss(_ canSwipe: Bool) -> some View {
+        modifier(TrayCanSwipeToDismissModifier(canSwipe: canSwipe))
+    }
+    
+    /// Controls whether the tray can be dismissed by tapping outside
+    /// - Parameter canTap: Whether the tray can be dismissed by tapping outside
+    /// - Returns: A view with the modified tap-outside-to-dismiss behavior
+    func trayCanTapOutsideToDismiss(_ canTap: Bool) -> some View {
+        modifier(TrayCanTapOutsideToDismissModifier(canTap: canTap))
+    }
+}
+
+// MARK: - Tray Can Tap Outside To Dismiss Modifier
+public struct TrayCanTapOutsideToDismissModifier: ViewModifier {
+    let canTap: Bool
+    
+    public func body(content: Content) -> some View {
+        content.transformEnvironment(\.trayConfig) { config in
+            config.tapOutsideToDismiss = canTap
+        }
     }
 }

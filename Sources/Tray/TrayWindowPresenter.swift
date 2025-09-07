@@ -200,6 +200,7 @@ private struct TraySurface<Inner: View>: View {
                                         }
                                     } : nil,
                                 // Drag gesture for dismissal
+                                config.canSwipeToDismiss ? 
                                 DragGesture(minimumDistance: TrayConstants.minimumDragDistance)
                                 .onChanged { value in
                                     isDragging = true
@@ -225,7 +226,7 @@ private struct TraySurface<Inner: View>: View {
                                             stretch = 0
                                         }
                                     }
-                                }
+                                } : nil
                             )
                         )
                         .onAppear {
@@ -275,7 +276,7 @@ private struct TrayBindingWindowRoot<Content: View>: View {
         ZStack(alignment: .bottom) {
             config.dimmingColor.opacity(dimOpacity)
                 .ignoresSafeArea()
-                .onTapGesture { isPresented = false }
+                .onTapGesture { if config.tapOutsideToDismiss { isPresented = false } }
             TraySurface(height: surfaceHeight,
                         config: config,
                         isPresented: $isPresented,
@@ -356,7 +357,7 @@ private struct TrayFlowWindowRoot<Pages: View>: View {
         ZStack(alignment: .bottom) {
             config.dimmingColor.opacity(dimOpacity)
                 .ignoresSafeArea()
-                .onTapGesture { isPresented = false }
+                .onTapGesture { if config.tapOutsideToDismiss { isPresented = false } }
             _VariadicViewAdapter(pages()) { container in
                 GeometryReader { proxy in
                     let children = container.children
@@ -490,7 +491,7 @@ private struct TrayControllerWindowRoot: View {
         ZStack(alignment: .bottom) {
             config.dimmingColor.opacity(dimOpacity)
                 .ignoresSafeArea()
-                .onTapGesture { controller.dismiss() }
+                .onTapGesture { if config.tapOutsideToDismiss { controller.dismiss() } }
             TraySurface(height: surfaceHeight,
                         config: config,
                         isPresented: $controller.isPresented,
