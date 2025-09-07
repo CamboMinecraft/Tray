@@ -11,7 +11,7 @@ public struct TrayExampleView: View {
     
     public var body: some View {
         VStack(spacing: 16) {
-            Spacer()
+            FeaturedAppsView()
             Button {
                 showFlow = true
             } label: {

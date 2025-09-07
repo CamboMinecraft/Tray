@@ -316,6 +316,12 @@ private struct TrayBindingWindowRoot<Content: View>: View {
         let screenHeight: CGFloat = 800
 #endif
         let cap = config.maxHeight ?? Tray.Detent.automatic.height(for: screenHeight)
+        
+        // Use max height when explicitly requested via preferMaxHeight
+        if config.preferMaxHeight {
+            return cap
+        }
+        
         return min(max(TrayConstants.minimumHeight, measuredHeight ?? TrayConstants.defaultFallbackHeight), cap)
     }
 }
@@ -349,7 +355,7 @@ private struct TrayFlowWindowRoot<Pages: View>: View {
                     let title = info?.title ?? ""
                     let detent = info?.detent ?? .automatic
                     let cap = config.maxHeight ?? Tray.Detent.automatic.height(for: proxy.size.height)
-                    let targetHeight = detent == .automatic ? min(max(TrayConstants.minimumHeight, measuredHeight ?? TrayConstants.defaultFallbackHeight), cap) : detent.height(for: proxy.size.height)
+                    let targetHeight = detent == .automatic ? (config.preferMaxHeight ? cap : min(max(TrayConstants.minimumHeight, measuredHeight ?? TrayConstants.defaultFallbackHeight), cap)) : detent.height(for: proxy.size.height)
                     let presentAnim = pageAnim ?? trayConfig.presentAnimation
                     let dismissAnim = pageAnim ?? trayConfig.dismissAnimation
                     let dragResetAnim = pageAnim ?? trayConfig.dragResetAnimation
@@ -554,6 +560,12 @@ private struct TrayControllerWindowRoot: View {
         let screenHeight: CGFloat = 800
 #endif
         let cap = config.maxHeight ?? Tray.Detent.automatic.height(for: screenHeight)
+        
+        // Use max height when explicitly requested via preferMaxHeight
+        if config.preferMaxHeight {
+            return cap
+        }
+        
         let result = min(max(TrayConstants.minimumHeight, measuredHeight ?? TrayConstants.defaultFallbackHeight), cap)
         return result
     }

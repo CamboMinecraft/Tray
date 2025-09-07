@@ -18,7 +18,7 @@ public extension Tray {
             case .height(let h):
                 return max(44, min(h, screenHeight))
             case .automatic:
-                return screenHeight * 0.95
+                return screenHeight * 0.90
             }
         }
     }
@@ -264,6 +264,16 @@ public struct TrayPaddingModifier: ViewModifier {
     }
 }
 
+public struct TrayPreferMaxHeightModifier: ViewModifier {
+    let preferMaxHeight: Bool
+    
+    public func body(content: Content) -> some View {
+        content.transformEnvironment(\.trayConfig) { config in
+            config.preferMaxHeight = preferMaxHeight
+        }
+    }
+}
+
 public extension View {
     /// Sets a custom background for all trays within scope.
     func trayBackground<S: ShapeStyle>(_ style: S) -> ModifiedContent<Self, TrayBackgroundModifier<S>> {
@@ -312,5 +322,10 @@ public extension View {
     /// Controls whether navigation progress bar is shown for all trays within scope.
     func trayShowsNavigationProgressBar(_ shows: Bool) -> ModifiedContent<Self, TrayNavigationProgressBarModifier> {
         modifier(TrayNavigationProgressBarModifier(showsProgressBar: shows))
+    }
+    
+    /// Controls whether trays prefer maximum available height (useful for scroll views).
+    func trayPreferMaxHeight(_ prefers: Bool = true) -> ModifiedContent<Self, TrayPreferMaxHeightModifier> {
+        modifier(TrayPreferMaxHeightModifier(preferMaxHeight: prefers))
     }
 }

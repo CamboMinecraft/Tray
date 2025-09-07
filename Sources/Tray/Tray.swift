@@ -65,6 +65,9 @@ public struct TrayConfig: @unchecked Sendable {
     // Padding
     public var horizontalPadding: CGFloat
     public var bottomPadding: CGFloat
+    
+    // Height behavior
+    public var preferMaxHeight: Bool
 
 
     public init(
@@ -89,7 +92,8 @@ public struct TrayConfig: @unchecked Sendable {
         compressionScale: CGFloat = TrayConstants.defaultCompressionScale,
         compressionAnimation: Animation = TrayConstants.defaultCompressionAnimation,
         horizontalPadding: CGFloat = TrayConstants.horizontalPadding,
-        bottomPadding: CGFloat = TrayConstants.bottomPadding
+        bottomPadding: CGFloat = TrayConstants.bottomPadding,
+        preferMaxHeight: Bool = false
     ) {
         self.cornerRadius = cornerRadius
         self.background = AnyShapeStyle(background)
@@ -115,6 +119,7 @@ public struct TrayConfig: @unchecked Sendable {
         self.compressionAnimation = compressionAnimation
         self.horizontalPadding = horizontalPadding
         self.bottomPadding = bottomPadding
+        self.preferMaxHeight = preferMaxHeight
     }
 
     // Use a computed property to avoid storing shared global state under strict concurrency.
@@ -264,7 +269,7 @@ struct TrayModifier<Root: View>: ViewModifier {
                         .overlay(alignment: .bottom) {
                             traySurface
                                 .offset(y: surfaceOffset + dragOffset)
-                                .gesture(dragGesture)
+                                .simultaneousGesture(dragGesture)
                         }
                         .zIndex(TrayConstants.overlayZIndex)
                 }
@@ -301,7 +306,7 @@ struct TrayModifier<Root: View>: ViewModifier {
         }
         .onChange(of: controller.stack.count) { oldCount, newCount in
             // Force remeasurement when content changes
-            if !shouldUseFixedHeight {
+            if !shouldUseFixedHeight && !shouldUseScrollableMaxHeight {
                 // Reset measured height to force a fresh measurement
                 measuredHeight = nil
             }
@@ -370,8 +375,8 @@ struct TrayModifier<Root: View>: ViewModifier {
         .readTrayHeight($measuredHeight)
         .id("tray-measurement-\(controller.stack.count)-\(controller.titles.last ?? "")") // Force complete recreation
         .frame(maxWidth: .infinity)
-        .frame(height: shouldUseFixedHeight ? (effectiveHeight + max(0, stretch)) : nil)
-        .frame(minHeight: shouldUseFixedHeight ? nil : (effectiveHeight + max(0, stretch)))
+        .frame(height: (shouldUseFixedHeight || shouldUseScrollableMaxHeight) ? (effectiveHeight + max(0, stretch)) : nil)
+        .frame(minHeight: (shouldUseFixedHeight || shouldUseScrollableMaxHeight) ? nil : (effectiveHeight + max(0, stretch)))
         .animation(contentAnimation, value: effectiveHeight)
         .trayApplyBackground(config: envConfig, cornerRadius: envConfig.cornerRadius, bottomCorner: bottomCorner)
         .shadow(color: envConfig.shadow, radius: TrayConstants.shadowRadius, x: 0, y: TrayConstants.shadowYOffset)
@@ -395,6 +400,11 @@ struct TrayModifier<Root: View>: ViewModifier {
         return envConfig.maxHeight != nil
     }
     
+    private var shouldUseScrollableMaxHeight: Bool {
+        // Use max height when explicitly configured or when content prefers it
+        return envConfig.preferMaxHeight == true
+    }
+    
     private var effectiveHeight: CGFloat {
         #if canImport(UIKit)
         let screenHeight = UIScreen.main.bounds.height
@@ -405,6 +415,11 @@ struct TrayModifier<Root: View>: ViewModifier {
         
         if shouldUseFixedHeight { 
             return currentHeight
+        }
+        
+        // For scrollable content without explicit height, use maximum height
+        if shouldUseScrollableMaxHeight {
+            return cap
         }
         
         // Use measured height if available, otherwise fall back to reasonable default
