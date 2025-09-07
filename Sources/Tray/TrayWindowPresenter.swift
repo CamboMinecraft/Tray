@@ -162,8 +162,7 @@ private struct TraySurface<Inner: View>: View {
                             .offset(x: TrayConstants.offScreenOffset, y: TrayConstants.offScreenOffset) // Position off-screen
                             .opacity(0) // Make invisible
                         }
-                        .background(config.background)
-                        .clipShape(VariableRoundedRectangle(tl: config.cornerRadius, tr: config.cornerRadius, bl: bottomCorner, br: bottomCorner))
+                        .trayApplyBackground(config: config, cornerRadius: config.cornerRadius, bottomCorner: bottomCorner)
                         .shadow(color: config.shadow, radius: TrayConstants.shadowRadius, x: 0, y: TrayConstants.shadowYOffset)
                         .padding(.horizontal, config.horizontalPadding)
                         .padding(.bottom, config.bottomPadding)

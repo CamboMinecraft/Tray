@@ -68,7 +68,7 @@ public struct TrayFlowModifier<Pages: View>: ViewModifier {
                                     let detent = info?.detent ?? .automatic
                                     let cap = config.maxHeight ?? Tray.Detent.automatic.height(for: proxy.size.height)
                                     let height = detent == .automatic
-                                    ? min(max(140, measuredHeight), cap)
+                                    ? min(max(140, measuredHeight ?? 0), cap)
                                     : detent.height(for: proxy.size.height)
                                     let bottomCorner: CGFloat = proxy.safeAreaInsets.bottom > 0 ? 44 : 20
 
@@ -111,10 +111,7 @@ public struct TrayFlowModifier<Pages: View>: ViewModifier {
                                     .frame(maxWidth: .infinity)
                                     .frame(height: height + max(0, stretch))
                                     .animation(pageAnim ?? envConfig.flowNextAnimation, value: measuredHeight)
-                                    .background(config.background)
-                                    .clipShape(VariableRoundedRectangle(
-                                        tl: config.cornerRadius, tr: config.cornerRadius, bl: bottomCorner, br: bottomCorner
-                                    ))
+                                    .trayApplyBackground(config: config, cornerRadius: config.cornerRadius, bottomCorner: bottomCorner)
                                     .shadow(color: config.shadow, radius: 20, x: 0, y: -8)
                                     .ignoresSafeArea(edges: .bottom)
                                     .padding(.horizontal, 8)

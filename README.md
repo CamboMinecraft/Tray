@@ -174,6 +174,117 @@ ContentView()
     }
 ```
 
+### Glass Background (iOS 18+)
+
+Use modern iOS glass materials for beautiful translucent backgrounds:
+
+```swift
+ContentView()
+    .tray(isPresented: $showTray) {
+        MyContent()
+    }
+    .trayBackground(.regularMaterial)           // Standard glass
+    .trayBackground(.thickMaterial)             // Thicker glass
+    .trayBackground(.thinMaterial)              // Lighter glass
+    .trayBackground(.ultraThinMaterial)         // Minimal glass
+    .trayBackground(.ultraThickMaterial)        // Heavy glass
+```
+
+### Advanced Glass Effects
+
+Combine materials with colors for custom glass effects:
+
+```swift
+// Tinted glass
+ContentView()
+    .tray(isPresented: $showTray) {
+        MyContent()
+    }
+    .trayBackground(.regularMaterial.opacity(0.9))
+
+// Custom glass with color
+ContentView()
+    .tray(isPresented: $showTray) {
+        MyContent()
+    }
+    .trayBackground(
+        .regularMaterial
+        .blendMode(.overlay)
+        .opacity(0.95)
+    )
+```
+
+### Liquid Glass with Custom Appliers
+
+For advanced effects, use custom background appliers that give you full control:
+
+```swift
+// Liquid Glass with fallback, preserving corners
+ContentView()
+    .tray(isPresented: $showTray) {
+        MyContent()
+    }
+    .trayBackground(.ultraThinMaterial) { surface, topRadius, _ in
+        if #available(iOS 18.0, macOS 15.0, *) {
+            surface.glassEffect(.regular.interactive(), in: .rect(cornerRadius: topRadius))
+        } else {
+            surface.background(.ultraThinMaterial)
+        }
+    }
+
+// Simple color background
+ContentView()
+    .tray(isPresented: $showTray) {
+        MyContent()
+    }
+    .trayBackground { surface in
+        surface.background(Color.blue)
+    }
+
+// Complex glass effect with multiple layers
+ContentView()
+    .tray(isPresented: $showTray) {
+        MyContent()
+    }
+    .trayBackground(.regularMaterial) { surface, topRadius, bottomRadius in
+        surface
+            .background(.regularMaterial, in: .rect(cornerRadius: topRadius))
+            .overlay {
+                if #available(iOS 18.0, *) {
+                    Color.clear
+                        .glassEffect(.thin.nonInteractive(), in: .rect(cornerRadius: topRadius))
+                }
+            }
+    }
+```
+
+### Dynamic Glass Based on Environment
+
+Adapt glass style to user preferences:
+
+```swift
+struct AdaptiveGlassTray: View {
+    @State private var showTray = false
+    @Environment(\.colorScheme) var colorScheme
+    
+    var glassBackground: some ShapeStyle {
+        colorScheme == .dark 
+            ? .ultraThickMaterial 
+            : .regularMaterial
+    }
+    
+    var body: some View {
+        Button("Show Adaptive Tray") {
+            showTray = true
+        }
+        .tray(isPresented: $showTray) {
+            MyContent()
+        }
+        .trayBackground(glassBackground)
+    }
+}
+```
+
 ### Programmatic Navigation
 
 Use the tray controller directly for programmatic navigation:

@@ -161,7 +161,45 @@ public struct TrayBackgroundModifier<Background: ShapeStyle>: ViewModifier {
     let background: Background
     
     public func body(content: Content) -> some View {
-        content
+        content.transformEnvironment(\.trayConfig) { config in
+            config.background = AnyShapeStyle(background)
+            // Reset any custom applier when explicit ShapeStyle is provided
+            config.backgroundApplier = nil
+        }
+    }
+}
+
+public struct TrayBackgroundApplierModifier: ViewModifier {
+    let applier: (AnyView) -> AnyView
+    public func body(content: Content) -> some View {
+        content.transformEnvironment(\.trayConfig) { config in
+            config.backgroundApplier = applier
+            // Clear radii-applier to avoid ambiguity
+            config.backgroundApplierWithRadii = nil
+        }
+    }
+}
+
+public struct TrayBackgroundApplierWithRadiiModifier: ViewModifier {
+    let applier: (AnyView, CGFloat, CGFloat) -> AnyView
+    public func body(content: Content) -> some View {
+        content.transformEnvironment(\.trayConfig) { config in
+            config.backgroundApplierWithRadii = applier
+            // Clear simple applier to avoid ambiguity
+            config.backgroundApplier = nil
+        }
+    }
+}
+
+public struct TrayBackgroundCombinedModifier<S: ShapeStyle, V: View>: ViewModifier {
+    let style: S
+    let applier: (AnyView, CGFloat, CGFloat) -> V
+    public func body(content: Content) -> some View {
+        content.transformEnvironment(\.trayConfig) { config in
+            config.background = AnyShapeStyle(style)
+            config.backgroundApplierWithRadii = { any, tltr, blbr in AnyView(applier(any, tltr, blbr)) }
+            config.backgroundApplier = nil
+        }
     }
 }
 
@@ -230,6 +268,20 @@ public extension View {
     /// Sets a custom background for all trays within scope.
     func trayBackground<S: ShapeStyle>(_ style: S) -> ModifiedContent<Self, TrayBackgroundModifier<S>> {
         modifier(TrayBackgroundModifier(background: style))
+    }
+
+    /// Provides full control over how the tray surface background is applied.
+    /// The applier receives the tray surface as `AnyView` and should return a wrapped view
+    /// (e.g., applying `.glassEffect(...)`, or any custom effects). If not provided,
+    /// the configured ShapeStyle is used.
+    func trayBackground<V: View>(@ViewBuilder _ applier: @escaping (AnyView) -> V) -> ModifiedContent<Self, TrayBackgroundApplierModifier> {
+        modifier(TrayBackgroundApplierModifier(applier: { any in AnyView(applier(any)) }))
+    }
+
+    /// Combined API: sets a ShapeStyle fallback and also supplies a view applier that
+    /// receives corner radii so you can match the surface shape for effects.
+    func trayBackground<S: ShapeStyle, V: View>(_ style: S, @ViewBuilder _ applier: @escaping (AnyView, CGFloat, CGFloat) -> V) -> ModifiedContent<Self, TrayBackgroundCombinedModifier<S, V>> {
+        modifier(TrayBackgroundCombinedModifier(style: style, applier: applier))
     }
     
     /// Sets a global animation override for all tray effects (present, dismiss, drag reset, next/back, close) within scope.

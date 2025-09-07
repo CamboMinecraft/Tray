@@ -34,7 +34,16 @@ public struct TrayExampleView: View {
         .trayShowsNavigationProgressBar(true)
         .trayDefaultPageTransition(.blur)
         .trayAnimation(.bouncy)
-
+        .trayBackground { surface in
+            if #available(iOS 18.0, macOS 15.0, *) {
+                if #available(iOS 26.0, *) {
+                    surface.glassEffect(.regular.interactive(), in: .rect(cornerRadius: 20))
+                }
+            } else {
+                surface.background(.ultraThinMaterial)
+            }
+        }
+        
     }
 }
 

@@ -32,6 +32,8 @@ public struct TrayNavigationBarItems: @unchecked Sendable {
 public struct TrayConfig: @unchecked Sendable {
     public var cornerRadius: CGFloat
     public var background: AnyShapeStyle
+    public var backgroundApplier: ((AnyView) -> AnyView)?
+    public var backgroundApplierWithRadii: ((AnyView, CGFloat, CGFloat) -> AnyView)?
     public var shadow: Color
     public var dimmingColor: Color
     public var maxHeight: CGFloat?
@@ -64,6 +66,7 @@ public struct TrayConfig: @unchecked Sendable {
     public var horizontalPadding: CGFloat
     public var bottomPadding: CGFloat
 
+
     public init(
         cornerRadius: CGFloat = TrayConstants.defaultCornerRadius,
         background: some ShapeStyle = Color.white,
@@ -90,6 +93,8 @@ public struct TrayConfig: @unchecked Sendable {
     ) {
         self.cornerRadius = cornerRadius
         self.background = AnyShapeStyle(background)
+        self.backgroundApplier = nil
+        self.backgroundApplierWithRadii = nil
         self.shadow = shadow
         self.dimmingColor = dimmingColor
         self.maxHeight = maxHeight
@@ -368,10 +373,7 @@ struct TrayModifier<Root: View>: ViewModifier {
         .frame(height: shouldUseFixedHeight ? (effectiveHeight + max(0, stretch)) : nil)
         .frame(minHeight: shouldUseFixedHeight ? nil : (effectiveHeight + max(0, stretch)))
         .animation(contentAnimation, value: effectiveHeight)
-        .background(envConfig.background)
-        .clipShape(VariableRoundedRectangle(
-            tl: envConfig.cornerRadius, tr: envConfig.cornerRadius, bl: bottomCorner, br: bottomCorner
-        ))
+        .trayApplyBackground(config: envConfig, cornerRadius: envConfig.cornerRadius, bottomCorner: bottomCorner)
         .shadow(color: envConfig.shadow, radius: TrayConstants.shadowRadius, x: 0, y: TrayConstants.shadowYOffset)
         .ignoresSafeArea(edges: .bottom)
         .padding(.horizontal, envConfig.horizontalPadding)
