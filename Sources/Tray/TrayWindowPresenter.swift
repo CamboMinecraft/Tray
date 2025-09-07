@@ -24,11 +24,15 @@ final class TrayWindowManager {
         isPresenting = true
         
         guard let windowScene = UIApplication.shared.connectedScenes
-            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene else { return }
+            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene ??
+            UIApplication.shared.connectedScenes.first as? UIWindowScene else { 
+            print("TrayWindowManager: Failed to find window scene")
+            return 
+        }
         
         let window = UIWindow(windowScene: windowScene)
         window.backgroundColor = .clear
-        window.windowLevel = .normal
+        window.windowLevel = .alert
         let host = UIHostingController(rootView: TrayBindingWindowRoot(
             isPresented: isPresented,
             config: config,
@@ -50,11 +54,15 @@ final class TrayWindowManager {
         isPresenting = true
         
         guard let windowScene = UIApplication.shared.connectedScenes
-            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene else { return }
+            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene ??
+            UIApplication.shared.connectedScenes.first as? UIWindowScene else { 
+            print("TrayWindowManager: Failed to find window scene")
+            return 
+        }
         
         let window = UIWindow(windowScene: windowScene)
         window.backgroundColor = .clear
-        window.windowLevel = .normal
+        window.windowLevel = .alert
         let host = UIHostingController(rootView: TrayControllerWindowRoot(
             controller: controller,
             config: config,
@@ -75,11 +83,15 @@ final class TrayWindowManager {
         isPresenting = true
         
         guard let windowScene = UIApplication.shared.connectedScenes
-            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene else { return }
+            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene ??
+            UIApplication.shared.connectedScenes.first as? UIWindowScene else { 
+            print("TrayWindowManager: Failed to find window scene")
+            return 
+        }
         
         let window = UIWindow(windowScene: windowScene)
         window.backgroundColor = .clear
-        window.windowLevel = .normal
+        window.windowLevel = .alert
         let host = UIHostingController(rootView: TrayFlowWindowRoot(
             isPresented: isPresented,
             config: config,

@@ -10,18 +10,20 @@ public struct TrayExampleView: View {
     }
     
     public var body: some View {
-        VStack(spacing: 16) {
-            FeaturedAppsView()
-            Button {
-                showFlow = true
-            } label: {
-                Text("Show Tray")
-                    .blueButton()
+        TabView {
+            VStack(spacing: 16) {
+                FeaturedAppsView()
+                Button {
+                    showFlow = true
+                } label: {
+                    Text("Show Tray")
+                        .blueButton()
+                }
             }
-        }
-        .padding()
-        .tray(isPresented: $showFlow, title: "Welcome") {
-            ChooseGroupStep()
+            .padding()
+            .tray(isPresented: $showFlow, title: "Welcome") {
+                ChooseGroupStep()
+            }
         }
     }
 }
